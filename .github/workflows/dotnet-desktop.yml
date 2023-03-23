@@ -1,0 +1,51 @@
+name: .NET Core Desktop
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    strategy:
+      matrix:
+        configuration: [Release]
+
+    runs-on: windows-latest
+
+    env:
+      Solution_Name: EyeLog.sln
+      
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
+
+    - name: Restore packages
+      run: nuget restore $env:Solution_Path 
+      
+    - name: Build solution
+      run: msbuild $env:Solution_Path /t:Build /p:Configuration=Release  
+
+    - name: Run EyeLog.exe
+      run: EyeLog/bin/Release/EyeLog.exe > log.txt
+    - name: Print log
+      run: type log.txt
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: Release
+        path: EyeLog/bin/Release/
