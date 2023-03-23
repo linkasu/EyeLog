@@ -24,7 +24,13 @@ jobs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
-
+    - run: 
+        | 
+        Install-Module -Name VcRedist -Force
+        New-Item -Path C:\Temp\VcRedist -ItemType Directory
+        $VcList = Get-VcList -Release "2012"
+        Save-VcRedist -VcList $VcList -Path C:\Temp\VcRedist
+        Install-VcRedist -Path C:\Temp\VcRedist -VcList $VcList -Silent
     - name: Install .NET Core
       uses: actions/setup-dotnet@v3
       with:
@@ -39,8 +45,9 @@ jobs:
     - name: Build solution
       run: msbuild $env:Solution_Path /t:Build /p:Configuration=Release  
 
+
     - name: Run EyeLog.exe
-      run: EyeLog/bin/Release/EyeLog.exe > log.txt
+      run: start EyeLog/bin/Release/EyeLog.exe > log.txt && start-sleep -s 5 && taskkill /IM EyeLog.exe /F
     - name: Print log
       run: type log.txt
 
