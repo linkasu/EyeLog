@@ -44,13 +44,6 @@ jobs:
       
     - name: Build solution
       run: msbuild $env:Solution_Path /t:Build /p:Configuration=Release  
-
-
-    - name: Run EyeLog.exe
-      run: start EyeLog/bin/Release/EyeLog.exe > log.txt && start-sleep -s 5 && taskkill /IM EyeLog.exe /F
-    - name: Print log
-      run: type log.txt
-
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
