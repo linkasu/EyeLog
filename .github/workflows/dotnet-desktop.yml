@@ -48,4 +48,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: Release
-        path: EyeLog/bin/Release/
+        path: EyeLog/bin/x86/Release/
