@@ -37,50 +37,58 @@ namespace EyeLog
             
             while (true)
             {
-                if(CurrentEyeValue == null) { continue; }
-
-                var now = DateTime.Now.ToFileTime();
-
-                var diff = (now-ts)/10000;
-                if (diff > EXIT_TIMEOUT) {
-                    Console.WriteLine("exit");
-                    CurrentEyeValue = null;
-                }
-
-                if(lastProcessedTS == ts) {
-                    continue;
-                }
-
-                int nowInside = -1;
-                for (int i = 0; i < bounds.Length; i++)
+                try
                 {
-                    bool isInside = bounds[i].isInside(((int) CurrentEyeValue.Data.X), ((int)CurrentEyeValue.Data.Y));
-                    if(isInside)
+                    if (CurrentEyeValue == null) { continue; }
+
+                    var now = DateTime.Now.ToFileTime();
+
+                    var diff = (now - ts) / 10000;
+                    if (diff > EXIT_TIMEOUT)
                     {
-                        nowInside = i;
+                        Console.WriteLine("exit");
+                        CurrentEyeValue = null;
+                        continue;
                     }
-                }
+
+                    if (lastProcessedTS == ts)
+                    {
+                        continue;
+                    }
+
+                    int nowInside = -1;
+                    for (int i = 0; i < bounds.Length; i++)
+                    {
+                        bool isInside = bounds[i].isInside(((int)CurrentEyeValue.Data.X), ((int)CurrentEyeValue.Data.Y));
+                        if (isInside)
+                        {
+                            nowInside = i;
+                        }
+                    }
 
 
-                var isEnter = lastSelected == -1 && nowInside!=-1 && lastSelected!=nowInside; 
-                var isExit = lastSelected != nowInside;
-                var isStay =  lastSelected != -1 && lastSelected==nowInside;
+                    var isEnter = lastSelected == -1 && nowInside != -1 && lastSelected != nowInside;
+                    var isExit = lastSelected != nowInside;
+                    var isStay = lastSelected != -1 && lastSelected == nowInside;
 
-                if (isEnter)
+                    if (isEnter)
+                    {
+                        OnEnter(nowInside, ts);
+                    }
+                    if (isExit)
+                    {
+                        OnExit(now);
+                    }
+                    if (isStay)
+                    {
+                        lastExitStartTS = -1;
+                        OnStay(ts);
+                    }
+                    lastProcessedTS = ts;
+                } catch (Exception ex)
                 {
-                    OnEnter(nowInside, ts);
+                    Console.Error.WriteLine(ex.ToString());
                 }
-                if (isExit)
-                {
-                    OnExit(now);   
-                }
-                if (isStay)
-                {
-                    lastExitStartTS = -1;
-                    OnStay(ts);
-                }
-                lastProcessedTS = ts;
-
             }
         }
 
