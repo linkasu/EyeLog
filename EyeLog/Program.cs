@@ -21,6 +21,7 @@ namespace EyeLog
         private static int lastSelected;
         private static long CLICK_TIMEOUT = 1000;
         private static long lastClicksCount;
+        private static long EXIT_TIMEOUT = 1000;
 
         static void Main(string[] args)
         {
@@ -39,6 +40,12 @@ namespace EyeLog
                 if(CurrentEyeValue == null) { continue; }
 
                 var now = DateTime.Now.ToFileTime();
+
+                var diff = (now-ts)/10000;
+                if (diff > EXIT_TIMEOUT) {
+                    Console.WriteLine("exit");
+                    CurrentEyeValue = null;
+                }
 
                 if(lastProcessedTS == ts) {
                     continue;
@@ -146,7 +153,6 @@ namespace EyeLog
 
         private static void OnGaze(object sender, StreamData<GazePointData> e)
         {
-
             CurrentEyeValue = e;
             ts = DateTime.Now.ToFileTime();
         }
