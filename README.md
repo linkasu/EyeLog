@@ -34,10 +34,10 @@ X,Y,Timestamp
 ```
 This is useful if you want unprocessed eye-tracking data.
 
-- **`--out <filename>`**  
+- **`--out=<filename>`**  
 Use this flag to write output logs to a file in addition to the console. For example:  
 ```
-EyeLog.exe --out gaze_log.txt
+EyeLog.exe --out=gaze_log.txt
 ```
 This will create (or append to) a file named `gaze_log.txt` containing the log data.
 
