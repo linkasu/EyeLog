@@ -1,5 +1,5 @@
-﻿using Tobii.Interaction;
-
+using Tobii.Interaction;
+using System.IO;
 using System ;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,11 +23,39 @@ namespace EyeLog
         private static long lastClicksCount;
         private static long EXIT_TIMEOUT = 1000;
 
+        static bool rawMode = false;
+        static StreamWriter logWriter = null;
+
+
         static void Main(string[] args)
         {
+            foreach (var arg in args)
+            {
+                if (arg == "--raw")
+                {
+                    rawMode = true;
+                    Console.WriteLine("Running in RAW mode...");
+                }
+                else if (arg.StartsWith("--out="))
+                {
+                    var path = arg.Substring("--out=".Length);
+                    try
+                    {
+                        logWriter = new StreamWriter(path, append: true);
+                        logWriter.AutoFlush = true;
+                        Console.WriteLine($"Logging to file: {path}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Error.WriteLine("Failed to open log file: " + ex.Message);
+                    }
+                }
+            }
+
             host = new Host();
             host.EnableConnection();
-            host.Streams.CreateGazePointDataStream().Next += OnGaze;  
+            host.Streams.CreateGazePointDataStream().Next += OnGaze;
+
             new Thread(new ThreadStart(InputCycle)).Start();
             new Thread(new ThreadStart(EyeCycle)).Start();
         }
@@ -159,12 +187,27 @@ namespace EyeLog
             }
         }
 
+
         private static void OnGaze(object sender, StreamData<GazePointData> e)
         {
             CurrentEyeValue = e;
             ts = DateTime.Now.ToFileTime();
+
+            string line;
+            if (rawMode)
+                line = $"{e.Data.X},{e.Data.Y},{e.Data.Timestamp}";
+            else
+                line = $"{e.Data.X}:{e.Data.Y}";
+
+            Console.WriteLine(line);
+
+            if (logWriter != null)
+            {
+                logWriter.WriteLine(line);
+            }
         }
-        
+
+
     }
 
 }
