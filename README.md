@@ -10,6 +10,9 @@ Before running EyeLog, make sure you have the following prerequisites installed:
 
 2. **C# Development Environment**: You need a C# development environment to compile and run the code. Visual Studio is recommended, but you can use any C# IDE of your choice.
 
+3. **Visual C++ Redistributable (x64)**: Required for Tobii native libraries.  
+   Download and install from: [Microsoft Visual C++ Redistributable](https://aka.ms/vs/17/release/vc_redist.x64.exe).
+
 ## Getting Started
 
 1. Clone or download the EyeLog repository to your local machine.
@@ -20,31 +23,60 @@ Before running EyeLog, make sure you have the following prerequisites installed:
 
 ## Usage
 
-EyeLog listens for user input and gaze data, allowing you to interact with it via the command line. Here are the available commands and how to use them:
+EyeLog listens for user input and gaze data, allowing you to interact with it via the command line. Here are the available options and commands:
 
-- **Define Areas of Interest**: You can define custom areas of interest on the screen by inputting their coordinates and dimensions in the following format: `x1,y1,width1,height1;x2,y2,width2,height2;...`. For example:
-  ```
-  100,100,200,200;300,300,150,150;
-  ```
+### Command-Line Flags
 
-- **Change Click Timeout**: You can adjust the click detection timeout by typing `timeout:<milliseconds>`. For example, to set a timeout of 1500 milliseconds (1.5 seconds), type:
-  ```
-  timeout:1500
-  ```
+- **`--raw`**  
+  When this flag is provided, EyeLog will output raw gaze data directly to the console in the format:  
+```
+X,Y,Timestamp
+```
+This is useful if you want unprocessed eye-tracking data.
 
-- **Exit the Program**: You can exit the program at any time by using your system's exit command (e.g., pressing Ctrl+C).
+- **`--out <filename>`**  
+Use this flag to write output logs to a file in addition to the console. For example:  
+```
+EyeLog.exe --out gaze_log.txt
+```
+This will create (or append to) a file named `gaze_log.txt` containing the log data.
+
+### Interactive Commands
+
+- **Define Areas of Interest**:  
+You can define custom areas of interest on the screen by inputting their coordinates and dimensions in the following format:  
+```
+x1,y1,width1,height1;x2,y2,width2,height2;...
+```
+Example:  
+```
+100,100,200,200;300,300,150,150;
+```
+
+- **Change Click Timeout**:  
+You can adjust the click detection timeout by typing `timeout:<milliseconds>`.  
+Example:  
+```
+timeout:1500
+```
+
+- **Exit the Program**:  
+Exit at any time by using your system's exit command (e.g., pressing `Ctrl+C`).
 
 ## How It Works
 
 EyeLog runs two main threads:
 
-1. **InputCycle Thread**: This thread listens for user input via the command line. You can use it to define areas of interest and adjust the click timeout.
+1. **InputCycle Thread**: Listens for user input via the command line. You can use it to define areas of interest and adjust the click timeout.
 
-2. **EyeCycle Thread**: This thread continuously monitors the user's gaze data and tracks when it enters, exits, or stays within the defined areas of interest. It also logs click events based on the specified timeout.
+2. **EyeCycle Thread**: Continuously monitors the user's gaze data and tracks when it enters, exits, or stays within the defined areas of interest. It also logs click events based on the specified timeout.
 
 ## Output
 
-EyeLog outputs information to the console, including:
+EyeLog outputs information to the console (and optionally a file if `--out` is specified):
+
+- **Raw Mode (`--raw`)**:  
+Continuous gaze coordinates in `X,Y,Timestamp` format.
 
 - **Enter**: When the user's gaze enters an area of interest, it logs the area's index.
 - **Exit**: When the user's gaze exits an area of interest, it logs an "exit" message.
@@ -56,7 +88,11 @@ Feel free to customize and extend EyeLog according to your needs. You can add mo
 
 ## Troubleshooting
 
-If you encounter any issues or have questions about EyeLog, please refer to the Tobii Interaction SDK documentation or seek assistance from the Tobii support community.
+If you encounter issues:
+- Make sure Tobii Experience (or Tobii Interaction SDK services) is running.
+- Verify you installed the [Visual C++ Redistributable (x64)](https://aka.ms/vs/17/release/vc_redist.x64.exe).
+- Confirm your project is built for **x64** (to match Tobii SDK libraries).
+- Refer to the Tobii Interaction SDK documentation or seek assistance from the Tobii support community.
 
 ## License
 
