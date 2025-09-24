@@ -199,8 +199,6 @@ namespace EyeLog
             else
                 line = $"{e.Data.X}:{e.Data.Y}";
 
-            Console.WriteLine(line);
-
             if (logWriter != null)
             {
                 logWriter.WriteLine(line);
