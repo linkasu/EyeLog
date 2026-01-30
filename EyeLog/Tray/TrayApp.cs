@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using EyeLog.Server;
 using EyeLog.Services;
+using EyeLog.State;
 
 namespace EyeLog.Tray
 {
