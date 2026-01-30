@@ -71,7 +71,7 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="tobii_interaction_lib_cs">
+    <Reference Include="tobii_interaction_lib_cs" Condition="Exists('..\\tobii\\lib\\x64\\tobii_interaction_lib_cs.dll')">
       <HintPath>..\tobii\lib\x64\tobii_interaction_lib_cs.dll</HintPath>
     </Reference>
   </ItemGroup>

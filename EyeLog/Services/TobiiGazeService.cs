@@ -14,7 +14,7 @@ namespace EyeLog.Services
             host.EnableConnection();
             host.Streams.CreateGazePointDataStream().Next += (sender, e) =>
             {
-                onGaze?.Invoke(e.Data.X, e.Data.Y, e.Data.Timestamp);
+                onGaze?.Invoke(e.Data.X, e.Data.Y, (long)e.Data.Timestamp);
             };
         }
 
