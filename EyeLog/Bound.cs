@@ -12,6 +12,10 @@ namespace EyeLog
         int y;
         int width;
         int height;
+        public int X => x;
+        public int Y => y;
+        public int Width => width;
+        public int Height => height;
         public Bound(int x, int y, int width, int height)
         {
             this.x = x;

@@ -47,6 +47,33 @@ namespace EyeLog.State
             }
         }
 
+        public int GetClickTimeout()
+        {
+            lock (sync)
+            {
+                return ClickTimeoutMs;
+            }
+        }
+
+        public List<BoundDto> GetBoundsSnapshot()
+        {
+            lock (sync)
+            {
+                var snapshot = new List<BoundDto>();
+                foreach (var bound in Bounds)
+                {
+                    snapshot.Add(new BoundDto
+                    {
+                        X = bound.X,
+                        Y = bound.Y,
+                        Width = bound.Width,
+                        Height = bound.Height
+                    });
+                }
+                return snapshot;
+            }
+        }
+
         public void AddBoundsSocket(WebSocket socket)
         {
             lock (sync)

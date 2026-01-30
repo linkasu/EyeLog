@@ -94,6 +94,7 @@
     <Compile Include="State\ClientRegistry.cs" />
     <Compile Include="State\ClientState.cs" />
     <Compile Include="State\GazeSample.cs" />
+    <Compile Include="Tray\ClientSetupForm.cs" />
     <Compile Include="Tray\SingleInstance.cs" />
     <Compile Include="Tray\TrayApp.cs" />
   </ItemGroup>

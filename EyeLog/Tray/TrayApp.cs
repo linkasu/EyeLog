@@ -11,15 +11,20 @@ namespace EyeLog.Tray
         private readonly HttpServer server;
         private readonly ServerOptions options;
         private readonly LogBuffer logBuffer;
+        private readonly ClientRegistry registry;
         private NotifyIcon icon;
         private MenuItem startItem;
         private MenuItem stopItem;
+        private MenuItem setupItem;
+        private ClientSetupForm setupForm;
+        private string clientId = Guid.NewGuid().ToString("N");
 
-        public TrayApp(HttpServer server, ServerOptions options, LogBuffer logBuffer)
+        public TrayApp(HttpServer server, ServerOptions options, LogBuffer logBuffer, ClientRegistry registry)
         {
             this.server = server;
             this.options = options;
             this.logBuffer = logBuffer;
+            this.registry = registry;
         }
 
         public void Start()
@@ -33,10 +38,11 @@ namespace EyeLog.Tray
 
             startItem = new MenuItem("Start server", (_, __) => StartServer());
             stopItem = new MenuItem("Stop server", (_, __) => StopServer());
+            setupItem = new MenuItem("Add bounds", (_, __) => OpenSetup());
             var logsItem = new MenuItem("Open logs", (_, __) => OpenLogs());
             var exitItem = new MenuItem("Exit", (_, __) => Exit());
 
-            icon.ContextMenu = new ContextMenu(new[] { startItem, stopItem, logsItem, exitItem });
+            icon.ContextMenu = new ContextMenu(new[] { startItem, stopItem, setupItem, logsItem, exitItem });
             icon.DoubleClick += (_, __) => OpenLogs();
 
             StartServer();
@@ -87,6 +93,16 @@ namespace EyeLog.Tray
             }
         }
 
+        private void OpenSetup()
+        {
+            if (setupForm == null || setupForm.IsDisposed)
+            {
+                setupForm = new ClientSetupForm(options, registry, logBuffer, clientId, id => clientId = id);
+            }
+            setupForm.Show();
+            setupForm.BringToFront();
+        }
+
         private void Exit()
         {
             try
@@ -104,6 +120,7 @@ namespace EyeLog.Tray
             var running = server.IsRunning;
             if (startItem != null) startItem.Enabled = !running;
             if (stopItem != null) stopItem.Enabled = running;
+            if (setupItem != null) setupItem.Enabled = true;
         }
 
         public void Dispose()

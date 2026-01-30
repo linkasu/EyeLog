@@ -32,7 +32,7 @@ namespace EyeLog
                 var server = new HttpServer(options, registry, gazeState, logBuffer);
 
                 using (var gazeService = new TobiiGazeService())
-                using (var trayApp = new TrayApp(server, options, logBuffer))
+                using (var trayApp = new TrayApp(server, options, logBuffer, registry))
                 {
                     try
                     {
