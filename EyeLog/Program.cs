@@ -25,6 +25,7 @@ namespace EyeLog
 
         static bool rawMode = false;
         static StreamWriter logWriter = null;
+        private static readonly object stdoutLock = new object();
 
 
         static void Main(string[] args)
@@ -34,7 +35,7 @@ namespace EyeLog
                 if (arg == "--raw")
                 {
                     rawMode = true;
-                    Console.WriteLine("Running in RAW mode...");
+                    Console.Error.WriteLine("Running in RAW mode...");
                 }
                 else if (arg.StartsWith("--out="))
                 {
@@ -43,7 +44,7 @@ namespace EyeLog
                     {
                         logWriter = new StreamWriter(path, append: true);
                         logWriter.AutoFlush = true;
-                        Console.WriteLine($"Logging to file: {path}");
+                        Console.Error.WriteLine($"Logging to file: {path}");
                     }
                     catch (Exception ex)
                     {
@@ -74,7 +75,7 @@ namespace EyeLog
                     var diff = (now - ts) / 10000;
                     if (diff > EXIT_TIMEOUT)
                     {
-                        Console.WriteLine("exit");
+                        WriteStdout("exit");
                         CurrentEyeValue = null;
                         continue;
                     }
@@ -127,7 +128,7 @@ namespace EyeLog
             if (lastClicksCount != clicks)
             {
                 lastClicksCount = clicks;
-                if (clicks > 0) Console.WriteLine("click:" + lastSelected + "," + clicks);
+                if (clicks > 0) WriteStdout("click:" + lastSelected + "," + clicks);
             }
         }
 
@@ -141,7 +142,7 @@ namespace EyeLog
             {
                 lastSelected = -1;
                 lastExitStartTS = -1;
-                Console.WriteLine("exit");
+                WriteStdout("exit");
             }
         }
 
@@ -149,7 +150,7 @@ namespace EyeLog
         {
             lastEnterTS = ts;
             lastSelected = nowInside;
-            Console.WriteLine("enter:" + lastSelected);
+            WriteStdout("enter:" + lastSelected);
         }
 
         private static void InputCycle()
@@ -160,6 +161,10 @@ namespace EyeLog
                 try
                 {
                     var line = Console.ReadLine();
+                    if (String.IsNullOrWhiteSpace(line))
+                    {
+                        continue;
+                    }
                     if (line.StartsWith("timeout:"))
                     {
                         CLICK_TIMEOUT = int.Parse(line.Substring("timeout:".Length));
@@ -195,13 +200,27 @@ namespace EyeLog
 
             string line;
             if (rawMode)
-                line = $"{e.Data.X},{e.Data.Y},{e.Data.Timestamp}";
+                line = $"gaze:{e.Data.X},{e.Data.Y},{e.Data.Timestamp}";
             else
                 line = $"{e.Data.X}:{e.Data.Y}";
+
+            if (rawMode)
+            {
+                WriteStdout(line);
+            }
 
             if (logWriter != null)
             {
                 logWriter.WriteLine(line);
+            }
+        }
+
+        private static void WriteStdout(string line)
+        {
+            lock (stdoutLock)
+            {
+                Console.WriteLine(line);
+                Console.Out.Flush();
             }
         }
 
