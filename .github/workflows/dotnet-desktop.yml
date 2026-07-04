@@ -17,11 +17,11 @@ jobs:
     runs-on: windows-latest
 
     env:
-      Solution_Name: EyeLog.sln
+      Solution_Path: EyeLog.sln
       
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - run: 
@@ -32,7 +32,7 @@ jobs:
         Save-VcRedist -VcList $VcList -Path C:\Temp\VcRedist
         Install-VcRedist -Path C:\Temp\VcRedist -VcList $VcList -Silent
     - name: Install .NET Core
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 6.0.x
 
@@ -45,7 +45,7 @@ jobs:
     - name: Build solution
       run: msbuild $env:Solution_Path /t:Build /p:Configuration=Release  
     - name: Upload artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Release
         path: EyeLog/bin/x86/Release/
