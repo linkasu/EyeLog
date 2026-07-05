@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using Tobii.Interaction.Framework;
 using System.Runtime.CompilerServices;
+using System.Globalization;
 
 namespace EyeLog
 {
@@ -200,9 +201,9 @@ namespace EyeLog
 
             string line;
             if (rawMode)
-                line = $"gaze:{e.Data.X},{e.Data.Y},{e.Data.Timestamp}";
+                line = string.Format(CultureInfo.InvariantCulture, "gaze:{0},{1},{2}", e.Data.X, e.Data.Y, e.Data.Timestamp);
             else
-                line = $"{e.Data.X}:{e.Data.Y}";
+                line = string.Format(CultureInfo.InvariantCulture, "{0}:{1}", e.Data.X, e.Data.Y);
 
             if (rawMode)
             {
